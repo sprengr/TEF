@@ -1,4 +1,6 @@
 NUGET
   remote: http://nuget.org/api/v2
   specs:
+    EntityFramework (6.1.1)
+    FluentAssertions (3.2.1)
     NUnit (2.6.3)
