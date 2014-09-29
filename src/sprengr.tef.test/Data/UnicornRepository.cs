@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace sprengr.tef.test.Data
+namespace Sprengr.Tef.Test.Data
 {
     public class UnicornRepository
     {

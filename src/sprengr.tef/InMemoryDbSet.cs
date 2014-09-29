@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace sprengr.tef
+namespace Sprengr.Tef
 {
     /// <summary>
     /// Mockable DbSet. Idea from:

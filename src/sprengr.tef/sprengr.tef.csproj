@@ -7,7 +7,7 @@
     <ProjectGuid>{7485B0FB-8661-44D3-B793-3C27451D20F9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>sprengr.tef</RootNamespace>
+    <RootNamespace>Sprengr.Tef</RootNamespace>
     <AssemblyName>sprengr.tef</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

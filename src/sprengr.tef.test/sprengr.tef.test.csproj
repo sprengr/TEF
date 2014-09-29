@@ -7,7 +7,7 @@
     <ProjectGuid>{4662EFC3-FC56-45D5-A745-4859CA26C070}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>sprengr.tef.test</RootNamespace>
+    <RootNamespace>Sprengr.Tef.Test</RootNamespace>
     <AssemblyName>sprengr.tef.test</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -308,14 +308,6 @@
       </ItemGroup>
     </When>
   </Choose>
-  <ItemGroup>
-    <Content Include="App.config.transform">
-      <Paket>True</Paket>
-    </Content>
-    <Content Include="Web.config.transform">
-      <Paket>True</Paket>
-    </Content>
-  </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>

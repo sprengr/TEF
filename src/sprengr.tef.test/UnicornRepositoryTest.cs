@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 
-namespace sprengr.tef.test
+namespace Sprengr.Tef.Test
 {
     [TestFixture]
     public class UnicornRepositoryTest
@@ -26,6 +26,7 @@ namespace sprengr.tef.test
 
             var repo = new UnicornRepository(dataModel.GetDataModel);
             var sorted = repo.GetSortedByName().Select(u => u.Id).ToArray();
+
             sorted.Should().BeEquivalentTo(new int[] { 2, 0, 1 });
         }
     }
