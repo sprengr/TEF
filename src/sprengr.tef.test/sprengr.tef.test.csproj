@@ -50,9 +50,9 @@
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\sprengr.tef\sprengr.tef.csproj">
+    <ProjectReference Include="..\sprengr.tef\Sprengr.Tef.csproj">
       <Project>{7485b0fb-8661-44d3-b793-3c27451d20f9}</Project>
-      <Name>sprengr.tef</Name>
+      <Name>Sprengr.Tef</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -3,14 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30324.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sprengr.tef", "sprengr.tef\sprengr.tef.csproj", "{7485B0FB-8661-44D3-B793-3C27451D20F9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sprengr.Tef", "sprengr.tef\Sprengr.Tef.csproj", "{7485B0FB-8661-44D3-B793-3C27451D20F9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{67FF093F-29D9-4E5E-B511-5FC42865939C}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sprengr.tef.test", "sprengr.tef.test\sprengr.tef.test.csproj", "{4662EFC3-FC56-45D5-A745-4859CA26C070}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sprengr.Tef.Test", "sprengr.tef.test\Sprengr.Tef.Test.csproj", "{4662EFC3-FC56-45D5-A745-4859CA26C070}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "paket", "paket", "{8128A9A5-A3B6-45F6-8CEC-6B0D58AB5DB3}"
 	ProjectSection(SolutionItems) = preProject
