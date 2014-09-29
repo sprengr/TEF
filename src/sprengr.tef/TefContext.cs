@@ -18,6 +18,13 @@ namespace Sprengr.Tef
         public TefContext()
         {
             _dbContext = new Mock<T>();
+            InitializeSets<T>();
+        }
+
+        private void InitializeSets<S>()
+        {
+            //GetSetPropertyInfos<S>();
+            //GetPropertNameByType<InMemoryDbSet<S>>(typeof(T));
         }
 
         public IDbSet<T> AddSetList<T>(IEnumerable<T> entities)
@@ -79,6 +86,12 @@ namespace Sprengr.Tef
                 throw new InvalidOperationException(string.Format("Type {0} has no property of type {1}.", type.FullName, typeof(S).FullName));
             }
             return properties.First().Name;
+        }
+
+        private PropertyInfo[] GetSetPropertyInfos<S>(Type type)
+        {
+            return type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                       .Where(pi => pi.PropertyType == typeof(S) || pi.PropertyType == typeof(S).BaseType).ToArray();
         }
 
         public T GetDataModel()

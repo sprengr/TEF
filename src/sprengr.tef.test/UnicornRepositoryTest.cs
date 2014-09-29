@@ -29,5 +29,28 @@ namespace Sprengr.Tef.Test
 
             sorted.Should().BeEquivalentTo(new int[] { 2, 0, 1 });
         }
+
+        [Test]
+        public void Save()
+        {
+            var dataModel = new TefContext<UnicornContext>();
+            var repo = new UnicornRepository(dataModel.GetDataModel);
+            var unicorn = new Unicorn()
+            {
+                Name = "Rose Misty Horse",
+                IsAlive = true,
+                Type = new UnicornType()
+                {
+                    Id = 0,
+                    Name = "Pegacorn",
+                    IsExtinct = true
+                }
+            };
+
+            //TODO: initialize sets
+            dataModel.AddSet(unicorn.Type);
+            //repo.Save(unicorn);
+        }
+
     }
 }
