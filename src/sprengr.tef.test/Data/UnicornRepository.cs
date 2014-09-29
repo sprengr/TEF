@@ -1,4 +1,4 @@
-﻿using sprengr.tef.test.Data.Entity;
+﻿using Sprengr.Tef.Test.Data.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;

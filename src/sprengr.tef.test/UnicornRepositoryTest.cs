@@ -1,12 +1,12 @@
 ﻿using NUnit.Framework;
-using sprengr.tef.test.Data;
-using sprengr.tef.test.Data.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Sprengr.Tef.Test.Data;
+using Sprengr.Tef.Test.Data.Entity;
 
 namespace Sprengr.Tef.Test
 {
