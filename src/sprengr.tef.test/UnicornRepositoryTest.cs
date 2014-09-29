@@ -47,9 +47,10 @@ namespace Sprengr.Tef.Test
                 }
             };
 
-            //TODO: initialize sets
             dataModel.AddSet(unicorn.Type);
-            //repo.Save(unicorn);
+            repo.Save(unicorn);
+            //TODO: nicer syntax
+            dataModel.GetDataModel().Unicorns.First().Should().ShouldBeEquivalentTo(new { Id = 0 }, o => o.ExcludingMissingProperties());
         }
 
     }

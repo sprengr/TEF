@@ -21,10 +21,22 @@ namespace Sprengr.Tef
             InitializeSets<T>();
         }
 
-        private void InitializeSets<S>()
+        private void InitializeSets<TDb>()
         {
-            //GetSetPropertyInfos<S>();
-            //GetPropertNameByType<InMemoryDbSet<S>>(typeof(T));
+            //TODO: refactor, cleanup
+            var p = (typeof(TDb)).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(pi => pi.PropertyType.IsGenericType && pi.PropertyType.GetGenericTypeDefinition().Name.Equals("DbSet`1")).AsEnumerable();
+
+            foreach (var pp in p)
+            {
+                var propertyExpression = GenerateExpressionForSetProperty(pp.Name);
+                var setType = typeof(InMemoryDbSet<>);
+                var entityType = pp.PropertyType.GetGenericArguments().First();
+                var emptySet = Activator.CreateInstance(setType.MakeGenericType(entityType));
+                _dbContext.Setup(propertyExpression).Returns(emptySet);
+                //TODO: Generic set
+                //_dbContext.Setup(d => d.Set<S>()).Returns(emptySet);   
+            }
         }
 
         public IDbSet<T> AddSetList<T>(IEnumerable<T> entities)
@@ -62,8 +74,13 @@ namespace Sprengr.Tef
         private Expression<Func<T, object>> GenerateExpressionForSetProperty<S>() where S : class
         {
             string propertNameInDataModel = GetPropertNameByType<InMemoryDbSet<S>>(typeof(T));
+            return GenerateExpressionForSetProperty(propertNameInDataModel);
+        }
+
+        private Expression<Func<T, object>> GenerateExpressionForSetProperty(string propertyName) 
+        {
             var propertyContainer = Expression.Parameter(typeof(T));
-            var property = Expression.PropertyOrField(propertyContainer, propertNameInDataModel);
+            var property = Expression.PropertyOrField(propertyContainer, propertyName);
             var propertyExpression = Expression.Lambda<Func<T, object>>(property, propertyContainer);
             return propertyExpression;
         }
@@ -80,7 +97,7 @@ namespace Sprengr.Tef
         private string GetPropertNameByType<S>(Type type)
         {
             //TODO: Meldung wenn Typ nicht gefunden
-            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(pi => pi.PropertyType == typeof(S) || pi.PropertyType == typeof(S).BaseType);
+            var properties = GetSetPropertyInfos<S>(type);
             if (properties.Count() < 1)
             {
                 throw new InvalidOperationException(string.Format("Type {0} has no property of type {1}.", type.FullName, typeof(S).FullName));
@@ -88,10 +105,10 @@ namespace Sprengr.Tef
             return properties.First().Name;
         }
 
-        private PropertyInfo[] GetSetPropertyInfos<S>(Type type)
+        private PropertyInfo[] GetSetPropertyInfos<TSet>(Type dbType)
         {
-            return type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                       .Where(pi => pi.PropertyType == typeof(S) || pi.PropertyType == typeof(S).BaseType).ToArray();
+            return dbType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                       .Where(pi => pi.PropertyType == typeof(TSet) || pi.PropertyType == typeof(TSet).BaseType).ToArray();
         }
 
         public T GetDataModel()
