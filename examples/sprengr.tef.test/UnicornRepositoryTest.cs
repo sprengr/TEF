@@ -1,9 +1,5 @@
 ﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Sprengr.Tef.Test.Data;
 using Sprengr.Tef.Test.Data.Entity;
@@ -16,27 +12,28 @@ namespace Sprengr.Tef.Test
         [Test]
         public void GetSortedByName()
         {
-            var dataModel = new TefContext<UnicornContext>();
+            var dataModelMock = new UnicornContext().CreateTef();
 
-            dataModel.AddSet(new[] {
+            dataModelMock.AddSet(new[] {
                 new Unicorn() { Name = "Nightshade Lovely Reins", Id = 0 },
                 new Unicorn() { Name = "Poppy Dainty Hooves", Id = 1 },
                 new Unicorn() { Name = "Marigold Misty Lashes", Id = 2 }
             });
 
-            var repo = new UnicornRepository(dataModel.GetDataModel);
+            var repo = new UnicornRepository(dataModelMock.GetDb);
             var sorted = repo.GetSortedByName().Select(u => u.Id).ToArray();
 
-            sorted.Should().BeEquivalentTo(new int[] { 2, 0, 1 });
+            sorted.Should().BeEquivalentTo(new [] { 2, 0, 1 });
         }
 
         [Test]
         public void Save()
         {
-            var dataModel = new TefContext<UnicornContext>();
-            var repo = new UnicornRepository(dataModel.GetDataModel);
+            var dataModelMock = new UnicornContext().CreateTef();
+            var repo = new UnicornRepository(dataModelMock.GetDb);
             var unicorn = new Unicorn()
             {
+                Id = 1,
                 Name = "Rose Misty Horse",
                 IsAlive = true,
                 Type = new UnicornType()
@@ -47,10 +44,10 @@ namespace Sprengr.Tef.Test
                 }
             };
 
-            dataModel.AddSet(unicorn.Type);
+            dataModelMock.AddSet(unicorn.Type);
             repo.Save(unicorn);
             //TODO: nicer syntax
-            dataModel.GetDataModel().Unicorns.First().Should().ShouldBeEquivalentTo(new { Id = 0 }, o => o.ExcludingMissingProperties());
+            dataModelMock.Set<Unicorn>().First().ShouldBeEquivalentTo(new { IsAlive = false }, o => o.ExcludingMissingProperties());
         }
 
     }

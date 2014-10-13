@@ -3,5 +3,4 @@ NUGET
   specs:
     EntityFramework (6.1.1)
     FluentAssertions (3.2.1)
-    Moq (4.2.1409.1722)
     NUnit (2.6.3)
