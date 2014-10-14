@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>0.0.1</version>
+    <title>TEF</title>
+    <authors>Sprenger Sebastian</authors>
+    <owners>Sprenger Sebastian</owners>
+    <licenseUrl>https://github.com/sprengr/TEF/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/sprengr/TEF/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Testable EntityFramework: Easy and straightforward way to test EF queries</description>
+    <releaseNotes>Initial release</releaseNotes>
+    <copyright>Copyright 2014</copyright>
+    <tags>EntityFramework TEF Testable Mock DbContext EF Database DB</tags>
+  </metadata>
+</package>
