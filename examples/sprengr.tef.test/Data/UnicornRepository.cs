@@ -21,7 +21,7 @@ namespace Sprengr.Tef.Test.Data
             using (var db = _contextFactory())
             {
                 var type = db.Types.First(t => t.Id == unicorn.Type.Id);
-                unicorn.IsAlive = !unicorn.IsAlive && type.IsExtinct;
+                unicorn.IsAlive = unicorn.IsAlive && !type.IsExtinct;
 
                 db.Unicorns.Add(unicorn);
                 db.SaveChanges();

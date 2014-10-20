@@ -8,9 +8,9 @@ using System.Reflection;
 
 namespace Sprengr.Tef
 {
-    public class TefWrapper<T> where T : DbContext
+    public class TefWrapper<T> where T : DbContext, new()
     {
-        private readonly T _dbContext;
+        private T _dbContext;
         private readonly Dictionary<Type, dynamic> _inMemoryDbSets;
 
         public TefWrapper(T dbContext)
@@ -34,7 +34,7 @@ namespace Sprengr.Tef
                 var entityType = dbSetProperty.PropertyType.GetGenericArguments().First();
                 var dbSetGenericType = dbSetType.MakeGenericType(entityType);
                 dynamic emptyDbSet = Activator.CreateInstance(dbSetGenericType);
-                SetPropertyValue(dbSetProperty.Name, emptyDbSet);
+                //SetPropertyValue(dbSetProperty.Name, emptyDbSet);
                 _inMemoryDbSets[entityType] = emptyDbSet;
             }
         }
@@ -68,17 +68,9 @@ namespace Sprengr.Tef
         public IDbSet<S> AddSet<S>(InMemoryDbSet<S> dbSet)
             where S : class
         {
-            var name = GetPropertNameByType<S>(typeof(T));
-            var existing = (InMemoryDbSet<S>)GetPropertyValue(name);
-            existing.AddRange(dbSet);
-            SetPropertyValue(name, dbSet);
+            _inMemoryDbSets[typeof (S)] = dbSet;
 
             return dbSet;
-        }
-
-        private object GetPropertyValue(string propertyName)
-        {
-            return _dbContext.GetType().GetProperty(propertyName).GetValue(_dbContext);
         }
 
         private void SetPropertyValue(string propertyName, object emptySet)
@@ -87,24 +79,32 @@ namespace Sprengr.Tef
             a.SetValue(_dbContext, emptySet);
         }
 
-        private string GetPropertNameByType<S>(Type type)
+        private string GetPropertNameByType(Type dbType, Type setType)
         {
-            var properties = GetSetPropertyInfos<S>(type);
+            var properties = GetSetPropertyInfos(dbType, setType);
             if (!properties.Any())
             {
-                throw new InvalidOperationException(string.Format("Type {0} has no property of type {1}.", type.FullName, typeof(S).FullName));
+                throw new InvalidOperationException(string.Format("Type {0} has no property of type {1}.", dbType.FullName, setType.FullName));
             }
             return properties.First().Name;
         }
 
-        private PropertyInfo[] GetSetPropertyInfos<TSet>(IReflect dbType)
+        private PropertyInfo[] GetSetPropertyInfos(IReflect dbType, Type setType)
         {
             return dbType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                       .Where(pi => pi.PropertyType.GenericTypeArguments.Contains(typeof(TSet))).ToArray();
+                       .Where(pi => pi.PropertyType.GenericTypeArguments.Contains(setType)).ToArray();
         }
 
         public T GetDb()
         {
+            _dbContext = new T();
+
+            foreach (var setType in _inMemoryDbSets.Keys)
+            {
+                var name = GetPropertNameByType(typeof(T), setType);
+                SetPropertyValue(name, _inMemoryDbSets[setType]);
+            }
+
             return _dbContext;
         }
         

@@ -49,6 +49,5 @@ namespace Sprengr.Tef.Test
             //TODO: nicer syntax
             dataModelMock.Set<Unicorn>().First().ShouldBeEquivalentTo(new { IsAlive = false }, o => o.ExcludingMissingProperties());
         }
-
     }
 }
