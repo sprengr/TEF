@@ -8,40 +8,49 @@ using System.Reflection;
 
 namespace Sprengr.Tef
 {
-    public class TefWrapper<T> where T : DbContext, new()
+    public class TefWrapper<TDb> where TDb : DbContext, new()
     {
-        private T _dbContext;
         private readonly Dictionary<Type, dynamic> _inMemoryDbSets;
 
-        public TefWrapper(T dbContext)
+        public TefWrapper(TDb dbContext)
         {
             _inMemoryDbSets = new Dictionary<Type, dynamic>();
-            _dbContext = dbContext;
 
-            InitializeSets<T>();
+            //TODO: Initialize with values from dbContext parm
+            InitializeSets();
         }
 
-        public void InitializeSets<TDb>() where TDb : class 
+        private void InitializeSets()
         {
-            var properties = (typeof (TDb)).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            var dbSetProperties = properties.Where(pi => pi.PropertyType.IsGenericType 
-                                                      && GetPropertyName(pi).Equals("DbSet`1"))
-                                            .AsEnumerable();
+            var dbSetProperties = GetDbSetPropertyInfos();
 
             foreach (var dbSetProperty in dbSetProperties)
             {
-                var dbSetType = typeof(InMemoryDbSet<>);
                 var entityType = dbSetProperty.PropertyType.GetGenericArguments().First();
-                var dbSetGenericType = dbSetType.MakeGenericType(entityType);
-                dynamic emptyDbSet = Activator.CreateInstance(dbSetGenericType);
-                //SetPropertyValue(dbSetProperty.Name, emptyDbSet);
+                var emptyDbSet = CreateEmptyDbSet(entityType);
                 _inMemoryDbSets[entityType] = emptyDbSet;
             }
         }
 
-        private static string GetPropertyName(PropertyInfo pi)
+        private IEnumerable<PropertyInfo> GetDbSetPropertyInfos()
+        {
+            var properties = (typeof (TDb)).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var dbSetProperties = properties.Where(pi => pi.PropertyType.IsGenericType
+                                                      && GetPropertyName(pi).Equals("DbSet`1"))
+                                            .AsEnumerable();
+            return dbSetProperties;
+        }
+        private string GetPropertyName(PropertyInfo pi)
         {
             return pi.PropertyType.GetGenericTypeDefinition().Name;
+        }
+
+        private dynamic CreateEmptyDbSet(Type entityType)
+        {
+            var dbSetType = typeof (InMemoryDbSet<>);
+            var dbSetGenericType = dbSetType.MakeGenericType(entityType);
+            dynamic emptyDbSet = Activator.CreateInstance(dbSetGenericType);
+            return emptyDbSet;
         }
 
         public IDbSet<T> AddSetList<T>(IEnumerable<T> entities)
@@ -52,10 +61,10 @@ namespace Sprengr.Tef
             return AddSet(dbSet);
         }
 
-        public IDbSet<S> AddSet<S>(params S[] entities)
-            where S : class
+        public IDbSet<TEntity> AddSet<TEntity>(params TEntity[] entities)
+            where TEntity : class
         {
-            var dbSet = new InMemoryDbSet<S>();
+            var dbSet = new InMemoryDbSet<TEntity>();
             if (entities.Length == 1 && entities[0] is IEnumerable)
             {
                 //TODO: Some casting magic possible?
@@ -65,49 +74,54 @@ namespace Sprengr.Tef
             return AddSet(dbSet);
         }
 
-        public IDbSet<S> AddSet<S>(InMemoryDbSet<S> dbSet)
-            where S : class
+        public IDbSet<TEntity> AddSet<TEntity>(InMemoryDbSet<TEntity> dbSet)
+            where TEntity : class
         {
-            _inMemoryDbSets[typeof (S)] = dbSet;
+            _inMemoryDbSets[typeof (TEntity)] = dbSet;
 
             return dbSet;
         }
 
-        private void SetPropertyValue(string propertyName, object emptySet)
+        public TDb GetDb()
         {
-            var a = _dbContext.GetType().GetProperty(propertyName);
-            a.SetValue(_dbContext, emptySet);
+            var dbContext = new TDb();
+
+            InitializeWithInMemoryDbSets(dbContext);
+
+            return dbContext;
         }
 
-        private string GetPropertNameByType(Type dbType, Type setType)
+        private void InitializeWithInMemoryDbSets(TDb dbContext)
         {
-            var properties = GetSetPropertyInfos(dbType, setType);
+            foreach (var setType in _inMemoryDbSets.Keys)
+            {
+                var name = GetPropertNameByType(typeof (TDb), setType);
+                SetPropertyValue(dbContext, name, _inMemoryDbSets[setType]);
+            }
+        }
+
+        private string GetPropertNameByType(Type dbContextType, Type dbSetType)
+        {
+            var properties = GetDbSetPropertyInfos(dbContextType, dbSetType);
             if (!properties.Any())
             {
-                throw new InvalidOperationException(string.Format("Type {0} has no property of type {1}.", dbType.FullName, setType.FullName));
+                throw new InvalidOperationException(string.Format("Type {0} has no property of type {1}.", dbContextType.FullName, dbSetType.FullName));
             }
             return properties.First().Name;
         }
 
-        private PropertyInfo[] GetSetPropertyInfos(IReflect dbType, Type setType)
+        private PropertyInfo[] GetDbSetPropertyInfos(IReflect dbType, Type setType)
         {
             return dbType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                        .Where(pi => pi.PropertyType.GenericTypeArguments.Contains(setType)).ToArray();
         }
 
-        public T GetDb()
+        private void SetPropertyValue(object propertyContainer, string propertyName, object value)
         {
-            _dbContext = new T();
-
-            foreach (var setType in _inMemoryDbSets.Keys)
-            {
-                var name = GetPropertNameByType(typeof(T), setType);
-                SetPropertyValue(name, _inMemoryDbSets[setType]);
-            }
-
-            return _dbContext;
+            var a = propertyContainer.GetType().GetProperty(propertyName);
+            a.SetValue(propertyContainer, value);
         }
-        
+
         public DbSet<TSet> Set<TSet>() where TSet : class
         {
             return _inMemoryDbSets[typeof(TSet)];
