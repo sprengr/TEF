@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using Sprengr.Tef;
@@ -47,6 +48,13 @@ namespace sprengr.tef.test
                 db.Entity.Attach(new SimpleEntityWithId {Id = 3});
                 db.Entity.Count().Should().BeGreaterThan(0);
             }
+        }
+
+        [Test]
+        public void ItShouldThrowIfAddingNonSets()
+        {
+            var simpleTestContextTef = new SimpleTestContext().CreateTef();
+            simpleTestContextTef.Invoking(t => t.AddSet("addingAString")).ShouldThrow<Exception>();
         }
     }
 }
