@@ -36,5 +36,17 @@ namespace sprengr.tef.test
             contextTwoEntitiesTef.Set<TestEntityWithId>().Should().BeEmpty();
             contextTwoEntitiesTef.Set<TestEntityWithIdAndName>().Should().BeEmpty();
         }
+
+        [Test]
+        public void ItShouldAddEntitiesWhenAttachIsCalled()
+        {
+            var simpleTestContextTef = new SimpleTestContext().CreateTef();
+            using (var db = simpleTestContextTef.GetDb())
+            {
+                db.Entity.Count().Should().Be(0);
+                db.Entity.Attach(new SimpleEntityWithId {Id = 3});
+                db.Entity.Count().Should().BeGreaterThan(0);
+            }
+        }
     }
 }

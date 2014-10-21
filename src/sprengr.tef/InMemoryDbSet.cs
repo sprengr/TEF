@@ -39,7 +39,7 @@ namespace Sprengr.Tef
             return entities;
         }
 
-        public new T Attach(T entity)
+        public override T Attach(T entity)
         {
             _data.Add(entity);
             return entity;
@@ -57,7 +57,7 @@ namespace Sprengr.Tef
 
         public new virtual T Find(params object[] keyValues)
         {
-            throw new NotImplementedException("Derive from FakeDbSet and override Find");
+            throw new NotImplementedException("Derive from InMemoryDbSet and override Find");
         }
 
         public new System.Collections.ObjectModel.ObservableCollection<T> Local
